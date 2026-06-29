@@ -2,8 +2,8 @@
 <html lang="es">
 <head>
     <meta charset="utf-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover, shrink-to-fit=no"/>
-    <title>BashaDrive V13 - Vertical</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"/>
+    <title>BashaDrive Auto-Fecha Pro</title>
     
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -14,36 +14,24 @@
 
     <style>
         [x-cloak] { display: none !important; }
-        
-        body {
-            background-color: #000;
-            color: #fff;
+        body { 
+            background-color: #000000; 
+            color: #ffffff; 
             font-family: system-ui, -apple-system, sans-serif;
             padding-top: env(safe-area-inset-top);
-            margin: 0;
         }
-
         .card-dia {
-            background: linear-gradient(145deg, #111827, #0a0f1a);
+            background: linear-gradient(145deg, #111827, #0f172a);
             border-radius: 1.25rem;
-            margin-bottom: 0.8rem;
-            padding: 1.1rem;
-            border-left: 10px solid #374151;
-            /* Eliminamos el alto fijo para que crezca si hay mucho texto */
-            min-height: 90px; 
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            margin-bottom: 0.7rem;
+            padding: 0.9rem 1.2rem;
+            border-left: 8px solid #374151;
         }
-
         .card-hoy {
-            border: 2px solid #f97316 !important;
-            border-left-width: 10px !important;
-            box-shadow: 0 0 15px rgba(249, 115, 22, 0.3);
+            border: 1px solid #f97316 !important;
+            border-left-width: 8px !important;
+            box-shadow: 0 0 10px rgba(249, 115, 22, 0.2);
         }
-
-        /* Colores dinámicos */
         .border-expres { border-left-color: #0ea5e9; }  
         .border-escolar { border-left-color: #10b981; } 
         .border-tarde { border-left-color: #f59e0b; }   
@@ -51,46 +39,51 @@
 
         .bus-badge {
             background: #f97316;
-            color: #000;
-            padding: 4px 10px;
-            border-radius: 0.75rem;
+            color: #000000;
+            padding: 0.25rem 0.6rem;
+            border-radius: 0.6rem;
             font-weight: 900;
-            font-size: 1.5rem;
+            font-size: 1.35rem;
             line-height: 1;
         }
-
-        .texto-servicio {
-            font-size: 1.1rem; /* Aumentado */
-            font-weight: 800;
-            text-transform: uppercase;
-            line-height: 1.3;
-            /* Esto permite que el texto baje a la siguiente línea sin ocultarse */
-            white-space: normal;
-            word-wrap: break-word;
-        }
-
-        .info-superior {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
-            padding-bottom: 6px;
+        .input-manual {
+            background: #1f2937;
+            border: 1px solid #374151;
+            border-radius: 0.6rem;
+            padding: 0.6rem;
+            color: white;
+            width: 100%;
+            font-size: 1rem;
         }
     </style>
 </head>
 <body x-data="bashaApp()" x-init="init()">
 
-    <header class="p-4 sticky top-0 bg-black/95 backdrop-blur-md z-50 border-b border-white/10 flex justify-between items-center">
-        <div>
-            <h1 class="text-lg font-black text-orange-500 italic">BASHADRIVE <span class="text-white">PRO V13</span></h1>
-            <p class="text-[10px] font-bold text-sky-400 uppercase tracking-widest">Cód. 86 • Menorca</p>
+    <!-- Header Fijo -->
+    <header class="p-4 sticky top-0 bg-black/95 backdrop-blur-md z-50 flex flex-col gap-2 border-b border-white/10">
+        <div class="flex justify-between items-center">
+            <div>
+                <h1 class="text-base font-black text-orange-500 italic leading-none">BASHADRIVE <span class="text-white">PRO</span></h1>
+                <p class="text-[9px] font-bold text-sky-400 uppercase tracking-widest">Menorca • V10 Auto-Fecha</p>
+            </div>
+            <div class="flex gap-2">
+                <button @click="borrarTodo()" class="text-red-500 bg-red-500/10 w-9 h-9 rounded-full flex items-center justify-center">
+                    <span class="material-symbols-outlined text-xl">delete</span>
+                </button>
+                <button @click="ui.showImport = true" class="bg-orange-600 w-9 h-9 rounded-full flex items-center justify-center shadow-lg text-white">
+                    <span class="material-symbols-outlined text-xl">add</span>
+                </button>
+            </div>
         </div>
-        <div class="flex gap-2">
-            <button @click="borrarTodo()" class="text-red-500 bg-red-500/10 w-10 h-10 rounded-xl flex items-center justify-center">
-                <span class="material-symbols-outlined">delete_forever</span>
+        
+        <!-- NAVEGACIÓN DE SEMANAS AUTOMÁTICA -->
+        <div class="flex justify-between items-center bg-white/5 rounded-xl px-2 py-1">
+            <button @click="navegarSemana(-7)" class="text-sky-400 p-1 active:scale-90 transition">
+                <span class="material-symbols-outlined">arrow_back_ios</span>
             </button>
-            <button @click="ui.showImport = true" class="bg-orange-600 w-10 h-10 rounded-xl flex items-center justify-center shadow-lg text-white">
-                <span class="material-symbols-outlined">add_task</span>
+            <span class="text-[10px] font-black uppercase tracking-widest text-gray-400">Navegar Semanas</span>
+            <button @click="navegarSemana(7)" class="text-sky-400 p-1 active:scale-90 transition">
+                <span class="material-symbols-outlined">arrow_forward_ios</span>
             </button>
         </div>
     </header>
@@ -99,82 +92,85 @@
         <template x-for="(dia, index) in planning" :key="index">
             <div class="card-dia" :class="[getEstiloDia(dia), esHoy(dia.fecha) ? 'card-hoy' : '']">
                 
-                <!-- Cabecera: Día y Fecha -->
-                <div class="info-superior">
+                <div class="flex justify-between items-start mb-1">
                     <div>
-                        <h3 class="text-orange-500 font-black uppercase text-[11px] tracking-widest" x-text="dia.diaSemana"></h3>
-                        <p class="text-gray-400 font-bold text-sm" x-text="dia.fecha"></p>
+                        <!-- 1. DÍA -->
+                        <h3 class="text-orange-500 font-black uppercase text-[10px] tracking-widest" x-text="dia.diaSemana"></h3>
+                        
+                        <!-- 2. FECHA (Automática entre el día y el servicio) -->
+                        <div class="flex items-center gap-2">
+                            <p class="text-white font-bold text-sm" x-text="dia.fecha"></p>
+                            <template x-if="esHoy(dia.fecha)">
+                                <span class="text-[9px] font-black text-sky-400 uppercase tracking-tighter">● Hoy</span>
+                            </template>
+                        </div>
                     </div>
-                    <button @click="abrirEditor(index)" class="text-gray-600">
-                        <span class="material-symbols-outlined">edit_note</span>
+                    <button @click="abrirEditor(index)" class="text-gray-600 p-1">
+                        <span class="material-symbols-outlined text-lg">edit</span>
                     </button>
                 </div>
 
-                <!-- Contenido: Servicio (crece hacia abajo) -->
-                <div class="flex justify-between items-center gap-3">
+                <div class="flex items-center justify-between gap-3 mt-1">
                     <div class="flex-1">
-                        <h2 class="texto-servicio text-white" x-text="dia.servicio"></h2>
+                        <!-- 3. SERVICIO (Sin asignar por defecto) -->
+                        <h2 class="text-[1.1rem] font-black text-white uppercase leading-tight" x-text="dia.servicio"></h2>
                         
-                        <div class="flex gap-4 mt-3 text-gray-400 font-bold text-sm">
-                            <div class="flex items-center gap-1.5">
-                                <span class="material-symbols-outlined text-sky-400 text-sm">login</span>
+                        <div class="flex gap-4 mt-1.5 text-gray-400 font-bold text-sm">
+                            <div class="flex items-center gap-1">
+                                <span class="material-symbols-outlined text-[14px] text-sky-400">login</span>
                                 <span x-text="dia.entrada || '--:--'"></span>
                             </div>
-                            <div class="flex items-center gap-1.5">
-                                <span class="material-symbols-outlined text-orange-400 text-sm">logout</span>
+                            <div class="flex items-center gap-1">
+                                <span class="material-symbols-outlined text-[14px] text-orange-400">logout</span>
                                 <span x-text="dia.salida || '--:--'"></span>
                             </div>
                         </div>
                     </div>
-                    
                     <template x-if="dia.bus">
-                        <div class="flex-shrink-0">
-                            <span class="bus-badge" x-text="dia.bus"></span>
-                        </div>
+                        <span class="bus-badge" x-text="dia.bus"></span>
                     </template>
                 </div>
-
-                <!-- Si hay notas adicionales o duración -->
-                <template x-if="dia.entrada && dia.salida">
-                    <p class="text-[10px] text-gray-500 font-bold uppercase tracking-tighter italic">
-                        Jornada estimada: <span class="text-gray-300" x-text="getDuracion(dia.entrada, dia.salida)"></span>
-                    </p>
-                </template>
             </div>
         </template>
     </main>
 
-    <!-- Modal Pegar (Mapeo por Columnas del Email) -->
+    <!-- Modal Pegar -->
     <div x-show="ui.showImport" x-cloak class="fixed inset-0 bg-black z-[100] p-6 flex flex-col">
         <div class="flex justify-between items-center mb-6">
-            <h2 class="text-xl font-black text-orange-500 uppercase italic">Pegar Cuadrante</h2>
+            <h2 class="text-lg font-black text-orange-500 uppercase">Pegar Cuadrante</h2>
             <button @click="ui.showImport = false" class="text-white"><span class="material-symbols-outlined">close</span></button>
         </div>
-        <textarea x-model="inputRaw" class="flex-grow bg-gray-900 border-2 border-white/10 rounded-3xl p-4 text-sky-400 font-mono text-base outline-none" placeholder="Copia la tabla de tu mail y pégala aquí..."></textarea>
-        <button @click="procesarVertical(inputRaw)" class="mt-4 bg-orange-600 text-white py-5 rounded-3xl font-black text-lg uppercase shadow-2xl"> GENERAR SEMANA </button>
+        <textarea x-model="inputRaw" class="flex-grow bg-gray-900 border border-white/10 rounded-xl p-4 text-sky-400 font-mono text-sm outline-none" placeholder="Pega el mail aquí..."></textarea>
+        <button @click="procesarMail(inputRaw)" class="mt-4 bg-orange-600 text-white py-4 rounded-xl font-black uppercase text-sm"> Generar Semana </button>
     </div>
 
-    <!-- Modal Editar (Manual) -->
+    <!-- Modal Editar -->
     <div x-show="ui.showEdit" x-cloak class="fixed inset-0 bg-black/95 z-[110] p-6 flex items-center justify-center">
-        <div class="bg-gray-900 border border-white/20 rounded-[2rem] p-6 w-full max-w-sm">
-            <h3 class="text-lg font-black text-orange-500 uppercase mb-4" x-text="'Editar ' + editForm.diaSemana"></h3>
+        <div class="bg-gray-900 border border-white/20 rounded-2xl p-5 w-full max-w-sm">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-sm font-black text-orange-500 uppercase" x-text="editForm.diaSemana"></h3>
+                <button @click="marcarLibreManual()" class="bg-gray-700 text-[9px] px-3 py-1 rounded-full font-black text-white uppercase">LIBRE</button>
+            </div>
             
-            <div class="space-y-4">
-                <textarea x-model="editForm.servicio" rows="3" class="w-full bg-black border border-white/10 rounded-xl p-3 text-white font-bold uppercase text-sm" placeholder="Servicio (Varias líneas permitidas)"></textarea>
-                
-                <div class="grid grid-cols-2 gap-3">
-                    <input type="time" x-model="editForm.entrada" class="w-full bg-black border border-white/10 rounded-xl p-3 text-white font-bold text-center"/>
-                    <input type="time" x-model="editForm.salida" class="w-full bg-black border border-white/10 rounded-xl p-3 text-white font-bold text-center"/>
+            <div class="space-y-3">
+                <div>
+                    <label class="text-[9px] font-bold text-gray-500 uppercase ml-1">Fecha</label>
+                    <input type="text" x-model="editForm.fecha" class="input-manual font-bold text-center" placeholder="DD/MM/AA"/>
                 </div>
-                
-                <input type="text" x-model="editForm.bus" class="w-full bg-black border border-white/10 rounded-xl p-3 text-orange-500 font-black text-2xl text-center" placeholder="Nº Bus"/>
-                
-                <input type="text" x-model="editForm.fecha" class="w-full bg-transparent border-none text-center text-xs text-gray-500" placeholder="Fecha DD/MM/AA"/>
+                <div>
+                    <label class="text-[9px] font-bold text-gray-500 uppercase ml-1">Turno</label>
+                    <input type="text" x-model="editForm.servicio" class="input-manual uppercase font-black"/>
+                </div>
+                <div class="grid grid-cols-2 gap-2">
+                    <input type="time" x-model="editForm.entrada" class="input-manual text-center"/>
+                    <input type="time" x-model="editForm.salida" class="input-manual text-center"/>
+                </div>
+                <input type="text" x-model="editForm.bus" class="input-manual text-center font-black text-orange-500 text-xl" placeholder="Bus"/>
             </div>
 
-            <div class="grid grid-cols-2 gap-3 mt-6">
-                <button @click="ui.showEdit = false" class="bg-gray-800 py-4 rounded-xl font-bold uppercase text-xs">Cerrar</button>
-                <button @click="guardarCambios()" class="bg-orange-600 py-4 rounded-xl font-black uppercase text-xs">Guardar</button>
+            <div class="flex gap-2 mt-5">
+                <button @click="ui.showEdit = false" class="flex-1 bg-gray-800 py-3 rounded-lg font-bold text-xs uppercase">Cerrar</button>
+                <button @click="guardarCambios()" class="flex-1 bg-orange-600 py-3 rounded-lg font-black text-xs uppercase text-white">Guardar</button>
             </div>
         </div>
     </div>
@@ -189,7 +185,7 @@
                 editForm: { diaSemana: '', fecha: '', servicio: '', entrada: '', salida: '', bus: '' },
 
                 init() {
-                    const saved = localStorage.getItem('basha_v13_vertical');
+                    const saved = localStorage.getItem('basha_v10_auto');
                     if (saved) {
                         this.planning = JSON.parse(saved);
                     } else {
@@ -197,10 +193,12 @@
                     }
                 },
 
+                // Crea la semana con fechas reales automáticamente
                 crearSemanaVacia(baseDate) {
                     const dias = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"];
                     let date = new Date(baseDate);
                     let day = date.getDay();
+                    // Ajuste para que el Lunes sea el primer día
                     let diff = date.getDate() - day + (day === 0 ? -6 : 1);
                     let monday = new Date(date.setDate(diff));
 
@@ -208,49 +206,21 @@
                         let current = new Date(monday);
                         current.setDate(monday.getDate() + i);
                         return {
-                            diaSemana: d, fecha: this.formatDate(current),
-                            servicio: 'SIN ASIGNAR', entrada: '', salida: '', bus: ''
+                            diaSemana: d,
+                            fecha: this.formatDate(current),
+                            servicio: 'SIN ASIGNAR',
+                            entrada: '', salida: '', bus: ''
                         };
                     });
                 },
 
-                // PROCESADOR INTELIGENTE DE COLUMNAS (TABLAS AMARILLAS)
-                procesarVertical(texto) {
-                    if (!texto.trim()) return;
-                    
-                    const diasNombres = ["LUNES", "MARTES", "MIÉRCOLES", "JUEVES", "VIERNES", "SÁBADO", "DOMINGO"];
-                    const regexFecha = /\b\d{1,2}[\/\-\.]\d{1,2}[\/\-\.]\d{2,4}\b/g;
-                    const regexHora = /\b\d{2}:\d{2}\b/g;
-                    const regexBus = /(?<![:\d])\b(56|67|76|86|10|15|20|101|102|12)\b(?![%:\d])/g;
-
-                    const fechas = texto.match(regexFecha) || [];
-                    const horas = texto.match(regexHora) || [];
-                    const buses = texto.match(regexBus) || [];
-
-                    // Extraer los nombres de los servicios (lo que no es fecha, ni hora, ni bus)
-                    let lineas = texto.split('\n').map(l => l.trim()).filter(l => l.length > 3);
-                    let serviciosDetectados = lineas.filter(l => {
-                        const u = l.toUpperCase();
-                        return !diasNombres.includes(u) && !l.match(regexFecha) && !l.match(regexHora) && !l.match(/^\d{2,3}$/);
-                    });
-
-                    this.planning.forEach((dia, i) => {
-                        // Asignar por orden de aparición en el texto (vertical)
-                        if (fechas[i]) dia.fecha = fechas[i];
-                        if (serviciosDetectados[i]) dia.servicio = serviciosDetectados[i];
-                        if (buses[i]) dia.bus = buses[i];
-                        if (horas[i*2]) dia.entrada = horas[i*2];
-                        if (horas[i*2 + 1]) dia.salida = horas[i*2 + 1];
-
-                        // Si el servicio es "LIBRE" aplicamos estilo gris
-                        if (dia.servicio.toUpperCase().includes('LIBRE') || dia.servicio.toUpperCase().includes('DESCANS')) {
-                            dia.bus = ''; dia.entrada = ''; dia.salida = '';
-                        }
-                    });
-
+                // Botones de navegación para no escribir fechas
+                navegarSemana(dias) {
+                    let partes = this.planning[0].fecha.split('/');
+                    let fechaActual = new Date(20 + partes[2], partes[1] - 1, partes[0]);
+                    fechaActual.setDate(fechaActual.getDate() + dias);
+                    this.crearSemanaVacia(fechaActual);
                     this.save();
-                    this.ui.showImport = false;
-                    this.inputRaw = '';
                 },
 
                 formatDate(date) {
@@ -260,43 +230,99 @@
                     return `${d}/${m}/${a}`;
                 },
 
-                esHoy(f) { return f === this.formatDate(new Date()); },
-
-                getDuracion(ini, fin) {
-                    if (!ini || !fin) return "";
-                    let [h1, m1] = ini.split(':').map(Number);
-                    let [h2, m2] = fin.split(':').map(Number);
-                    let min1 = h1 * 60 + m1;
-                    let min2 = h2 * 60 + m2;
-                    let dif = min2 - min1;
-                    if (dif < 0) dif += 1440;
-                    return `${Math.floor(dif/60)}h ${dif%60}m`;
+                esHoy(fechaStr) {
+                    return fechaStr === this.formatDate(new Date());
                 },
 
                 getEstiloDia(dia) {
                     const s = dia.servicio?.toUpperCase() || '';
-                    if (s.includes('LIBRE') || s.includes('DESCANS')) return 'border-libre';
+                    if (s.includes('LIBRE')) return 'border-libre';
                     if (s.includes('EXPRES') || s.includes('BINTAUFA')) return 'border-expres';
                     if (s.includes('ESC.') || s.includes('TOMAS') || s.includes('MAÑANA')) return 'border-escolar';
                     return 'border-tarde';
                 },
 
-                abrirEditor(i) {
-                    this.editIndex = i;
-                    this.editForm = { ...this.planning[i] };
+                abrirEditor(index) {
+                    this.editIndex = index;
+                    this.editForm = { ...this.planning[index] };
                     this.ui.showEdit = true;
                 },
 
+                marcarLibreManual() {
+                    this.editForm.servicio = 'Día LIBRE';
+                    this.editForm.bus = '';
+                    this.editForm.entrada = '';
+                    this.editForm.salida = '';
+                },
+
                 guardarCambios() {
+                    if (this.planning[this.editIndex].fecha !== this.editForm.fecha) {
+                        this.propagarFecha(this.editForm.fecha, this.editIndex);
+                    }
                     this.planning[this.editIndex] = { ...this.editForm };
                     this.save();
                     this.ui.showEdit = false;
                 },
 
-                save() { localStorage.setItem('basha_v13_vertical', JSON.stringify(this.planning)); },
+                propagarFecha(fechaManual, index) {
+                    let parts = fechaManual.split(/[\/\-\.]/);
+                    if (parts.length < 3) return;
+                    let d = parseInt(parts[0]), m = parseInt(parts[1])-1, y = parseInt(parts[2]);
+                    if (y < 100) y += 2000;
+                    let base = new Date(y, m, d);
+                    
+                    this.planning.forEach((dia, i) => {
+                        let diff = i - index;
+                        let nueva = new Date(base);
+                        nueva.setDate(base.getDate() + diff);
+                        this.planning[i].fecha = this.formatDate(nueva);
+                    });
+                },
+
+                procesarMail(texto) {
+                    if (!texto.trim()) return;
+                    const diasSemana = ["LUNES", "MARTES", "MIÉRCOLES", "JUEVES", "VIERNES", "SÁBADO", "DOMINGO"];
+                    const regexFecha = /\b\d{1,2}[\/\-\.]\d{1,2}[\/\-\.]\d{2,4}\b/g;
+                    
+                    const primerMatch = texto.match(regexFecha);
+                    if (primerMatch) {
+                        let p = primerMatch[0].split(/[\/\-\.]/);
+                        let y = parseInt(p[2]); if (y < 100) y += 2000;
+                        this.crearSemanaVacia(new Date(y, parseInt(p[1])-1, parseInt(p[0])));
+                    }
+
+                    const lineas = texto.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+                    let diaActualIdx = -1;
+
+                    lineas.forEach(linea => {
+                        const lU = linea.toUpperCase();
+                        diasSemana.forEach((d, idx) => { if (lU.includes(d)) diaActualIdx = idx; });
+
+                        if (diaActualIdx !== -1 && linea.length > 5 && !diasSemana.includes(lU)) {
+                            const horas = linea.match(/\b\d{2}:\d{2}\b/g);
+                            if (horas) {
+                                this.planning[diaActualIdx].entrada = horas[0];
+                                if (horas[1]) this.planning[diaActualIdx].salida = horas[1];
+                            }
+                            const busMatch = linea.match(/(?<![:\d])\b(56|67|76|86|10|15|20|101|102)\b(?![%:\d])/);
+                            if (busMatch) this.planning[diaActualIdx].bus = busMatch[0];
+
+                            if (lU.includes('LIBRE') || lU.includes('DESCANS')) {
+                                this.planning[diaActualIdx].servicio = "Día LIBRE";
+                            } else {
+                                let nombre = linea.replace(regexFecha, '').replace(/\b\d{2}:\d{2}\b/g, '').replace(/\b\d{2,3}\b/g, '').trim();
+                                if (nombre.length > 2) this.planning[diaActualIdx].servicio = nombre;
+                            }
+                        }
+                    });
+                    this.save();
+                    this.ui.showImport = false;
+                },
+
+                save() { localStorage.setItem('basha_v10_auto', JSON.stringify(this.planning)); },
 
                 borrarTodo() {
-                    if (confirm('¿Resetear cuadrante?')) {
+                    if (confirm('¿Resetear cuadrante y fechas?')) {
                         this.crearSemanaVacia(new Date());
                         this.save();
                     }
